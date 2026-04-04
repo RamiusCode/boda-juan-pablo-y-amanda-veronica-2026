@@ -3,7 +3,7 @@
     <div class="max-w-6xl mx-auto px-2 sm:px-6 lg:px-8">
         <!-- 💌 SOBRE CON FOTO -->
         <div
-            class="relative w-full flex justify-center mb-6 sm:mb-10 md:mb-14"
+            class="relative w-full flex justify-center mb-8 sm:mb-12 md:mb-16"
             id="sobre-container"
         >
             <div
@@ -15,48 +15,6 @@
                     class="w-full h-auto object-contain drop-shadow-2xl"
                     id="sobre-imagen"
                 />
-            </div>
-        </div>
-
-        <!-- 📖 VERSÍCULO -->
-        <div class="flex justify-center mb-8 sm:mb-12" id="versiculo-container">
-            <div
-                class="relative bg-[#4a5f7f] rounded-[40px] shadow-lg px-8 sm:px-12 py-8 w-full max-w-sm overflow-hidden"
-                id="card-versiculo"
-            >
-                <!-- IMAGEN DE FONDO -->
-                <img
-                    src="/imagenes/azul.png"
-                    alt="Fondo versículo"
-                    class="absolute inset-0 w-full h-full object-cover opacity-70"
-                />
-
-                <!-- Overlay -->
-                <div class="absolute"></div>
-
-                <!-- Contenido -->
-                <div class="relative z-10 text-center">
-                    <!-- Versículo -->
-                    <p
-                        class="font-crimson text-white text-xl sm:text-2xl leading-snug mb-4"
-                    >
-                        La cuerda de tres hilos no se rompe fácilmente
-                    </p>
-
-                    <!-- Línea decorativa -->
-                    <div class="flex items-center justify-center gap-2 mb-4">
-                        <div class="w-10 h-px bg-white/40"></div>
-                        <div class="w-1.5 h-1.5 rounded-full bg-white/60"></div>
-                        <div class="w-10 h-px bg-white/40"></div>
-                    </div>
-
-                    <!-- Referencia -->
-                    <p
-                        class="font-crimson text-white/80 text-sm uppercase tracking-[0.2em]"
-                    >
-                        Eclesiastés 4:9-12
-                    </p>
-                </div>
             </div>
         </div>
 
@@ -185,6 +143,7 @@
            transition-all duration-300 hover:scale-110 active:scale-95"
     style="opacity: 0; pointer-events: none;"
 >
+    <!-- PAUSE (visible cuando suena música) -->
     <svg
         id="icono-pause"
         xmlns="http://www.w3.org/2000/svg"
@@ -195,6 +154,7 @@
         <rect x="6" y="4" width="4" height="16" rx="1"></rect>
         <rect x="14" y="4" width="4" height="16" rx="1"></rect>
     </svg>
+    <!-- PLAY (visible cuando está en pausa) -->
     <svg
         id="icono-play"
         xmlns="http://www.w3.org/2000/svg"
@@ -244,24 +204,6 @@
             delay: 1.2,
         });
 
-        // ═══ ANIMACIÓN VERSÍCULO ═══
-        gsap.fromTo(
-            "#card-versiculo",
-            { opacity: 0, y: 40, scale: 0.95 },
-            {
-                opacity: 1,
-                y: 0,
-                scale: 1,
-                duration: 1,
-                ease: "power3.out",
-                scrollTrigger: {
-                    trigger: "#versiculo-container",
-                    start: "top 80%",
-                    toggleActions: "play none none none",
-                },
-            },
-        );
-
         // ═══ ANIMACIÓN TARJETA IZQUIERDA ═══
         gsap.fromTo(
             "#tarjeta-izquierda",
@@ -305,10 +247,14 @@
         const iconoPlay = document.getElementById("icono-play");
         const iconoPause = document.getElementById("icono-pause");
 
+        // Espera a que la Portada cree el audio global
         const intervalo = setInterval(() => {
             const audio = (window as any).audioGlobal;
+
             if (audio) {
                 clearInterval(intervalo);
+
+                // Aparece con animación suave
                 gsap.to(btnAudio, {
                     opacity: 1,
                     duration: 0.5,
@@ -317,14 +263,19 @@
                         btnAudio.style.pointerEvents = "auto";
                     },
                 });
+
+                // Estado inicial: reproduciendo → mostrar pause
                 iconoPlay?.classList.add("hidden");
                 iconoPause?.classList.remove("hidden");
 
+                // Toggle play/pause
                 btnAudio.addEventListener("click", () => {
                     const audioActual = (window as any).audioGlobal;
                     const reproduciendo = (window as any)
                         .estaReproduciendoGlobal;
+
                     if (!audioActual) return;
+
                     if (reproduciendo) {
                         audioActual.pause();
                         (window as any).estaReproduciendoGlobal = false;
@@ -336,6 +287,8 @@
                         iconoPlay?.classList.add("hidden");
                         iconoPause?.classList.remove("hidden");
                     }
+
+                    // Micro-animación al hacer click
                     gsap.fromTo(
                         btnAudio,
                         { scale: 0.85 },
